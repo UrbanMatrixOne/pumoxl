@@ -1,8 +1,14 @@
-# python-seed
+# pumoxl
 
-This is a starter repo for creating a new python package. Included are templates for standard files as well as best practices.
+python package for use in excel via xlwings
 
-Update the setup.py file to reflect the proper PACKAGENAME and rename the PACKAGENAME to the name of the package
-
-## About
-python-seed was created by [Development Seed](<http://developmentseed.org>)
+instructions (Windows or Mac)
+1. Download & Install Anaconda
+2. create environment xlenv 
+3. install xlwings `conda install xlwings`
+4. Install full add-in `xlwings addin install`
+5. Open Excel:  
+6. Goto Developer Tab -> Excel Add-Ins -> Browse, add : `C:\Users\dan\AppData\Roaming\Microsoft\Excel\XLSTART\`
+  Enable Developer Tab using File -> Options -> Customize Ribbon
+7. Goto `xlwings` ribbon. paste `C:\Users\dan\Anaconda3\envs\xlenv\Python.exe` into `Intepreter:`
+8. Press `Alt+F11` to open vba editor. choose `xlwings` and press ok 
