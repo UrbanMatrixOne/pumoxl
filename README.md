@@ -12,3 +12,9 @@ instructions (Windows or Mac)
   Enable Developer Tab using File -> Options -> Customize Ribbon
 7. Goto `xlwings` ribbon. paste `C:\Users\dan\Anaconda3\envs\xlenv\Python.exe` into `Intepreter:`
 8. Press `Alt+F11` to open vba editor. choose `xlwings` and press ok 
+
+
+Open the file : 
+`pumoxl.xlsm`
+Edit the python code:
+`pumoxl.xlsm`
