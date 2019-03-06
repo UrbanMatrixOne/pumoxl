@@ -1,0 +1,1 @@
+C:\Users\dan\Anaconda3\Scripts\activate.bat C:\Users\dan\Anaconda3\envs\xlenv & "C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE"
