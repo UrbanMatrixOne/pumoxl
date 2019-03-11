@@ -83,7 +83,7 @@ def saveMapImage(gdp,metric, img_filename):
 def getStateFIPSForPoint(user_point):
     return(gpd.sjoin(getStates(), user_point).STATEFP.to_string(index= False))
 
-def generateImgForPoint(Latitude_in,Longitude_in,metric):
+def getDataAndImageForPoint(Latitude_in,Longitude_in,metric):
     user_point = makeGeoDataFrame(Latitude_in,Longitude_in)
     user_point['buffer'] = user_point.buffer(.05)
     user_buffer = gpd.GeoDataFrame(user_point, geometry = 'buffer', crs = user_point.crs)
@@ -91,9 +91,10 @@ def generateImgForPoint(Latitude_in,Longitude_in,metric):
     #get tract level data fror state
     state_fips = getStateFIPSForPoint(user_point)
     tract_geodata = getCensusTracts(state_fips)
-    base = gpd.sjoin(tract_geodata,user_buffer).plot(metric,legend = True)     
+    tract_geodata_buffer = gpd.sjoin(tract_geodata,user_buffer)
+    base = tract_geodata_buffer.plot(metric,legend = True)     
     user_point.plot(ax = base,marker = '+',color = 'red',markersize = 100)
     plt.savefig(f'lon_{Longitude_in}_lat{Latitude_in}_{metric}.png')
-
+    return (tract_geodata_buffer)
     
     #generateImgForPoint(34.0522,-118.2436,metric= 'pct_under_poverty_line')
