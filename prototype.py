@@ -16,10 +16,12 @@ from keras import optimizers
 
 from absl import flags
 from scipy import misc
+import data.scripts.census
+
 WORLD_LOWRES = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
 NERC_REGIONS = geopandas.read_file('./data/NERC_Regions/NERC_Regions.shp')
 SHOW_IMAGES = True
-COUNTER =0
+
 
 def makeGeoDataFrame(Latitude_in,Longitude_in):
     df = pd.DataFrame({'Latitude' : Latitude_in, 'Longitude' : Longitude_in}, index=[0] )
@@ -165,11 +167,6 @@ def delete_all_images():
     return(SHOW_IMAGES)
 
 
-@xw.func
-def incrementCounter():
-    COUNTER +=1 
-    return (COUNTER)
-
 @xw.sub
 def sample_sub():
     #wb = xw.Workbook.caller()
@@ -230,3 +227,8 @@ def classifyUrbanRural():
      
     xw.App.calculation= 'automatic'
     xw.App.screen_updating = True
+
+@xw.func
+def getPovertyLinePct(lat,lon):
+    geodata = data.scripts.census.getDataAndImageForPoint(lat,lon,'pct_under_poverty_line')
+    return (sum(geodata.pct_under_poverty_line *geodata.B01001_001E) / sum(geodata.B01001_001E))
