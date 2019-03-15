@@ -83,18 +83,26 @@ def saveMapImage(gdp,metric, img_filename):
 def getStateFIPSForPoint(user_point):
     return(gpd.sjoin(getStates(), user_point).STATEFP.to_string(index= False))
 
-def getDataAndImageForPoint(Latitude_in,Longitude_in,metric):
+def getDataAndImageForPoint(Latitude_in,Longitude_in,metric, buffer_dist = .05):
     user_point = makeGeoDataFrame(Latitude_in,Longitude_in)
-    user_point['buffer'] = user_point.buffer(.05)
+    user_point['buffer'] = user_point.buffer(buffer_dist)
     user_buffer = gpd.GeoDataFrame(user_point, geometry = 'buffer', crs = user_point.crs)
-    
+
+ 
+    #dummy
+    dummy_df = pd.DataFrame(data = {metric: [0,1]})
+
     #get tract level data fror state
-    state_fips = getStateFIPSForPoint(user_point)
+    state_fips = getStateFIPSForPoint(user_point).strip()
     tract_geodata = getCensusTracts(state_fips)
     tract_geodata_buffer = gpd.sjoin(tract_geodata,user_buffer)
-    base = tract_geodata_buffer.plot(metric,legend = True)     
+
+    #make plot
+    base = tract_geodata_buffer.append(dummy_df).plot(metric,legend = True)     
     user_point.plot(ax = base,marker = '+',color = 'red',markersize = 100)
-    plt.savefig(f'lon_{Longitude_in}_lat{Latitude_in}_{metric}.png')
-    return (tract_geodata_buffer)
+    filename_out = f'lon_{Longitude_in}_lat{Latitude_in}_{metric}_{buffer_dist}.png'
+    plt.savefig(filename_out)
+    return (tract_geodata_buffer,filename_out)
     
-    #generateImgForPoint(34.0522,-118.2436,metric= 'pct_under_poverty_line')
+    #getDataAndImageForPoint(34.0522,-118.2436,metric= 'pct_under_poverty_line')
+#Latitude_in,Longitude_in =(34.0522,-118.2436)

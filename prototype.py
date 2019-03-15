@@ -19,9 +19,10 @@ from scipy import misc
 import data.scripts.census
 
 WORLD_LOWRES = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
-NERC_REGIONS = geopandas.read_file('./data/NERC_Regions/NERC_Regions.shp')
+
 SHOW_IMAGES = True
 
+print('finished imports ') 
 
 def makeGeoDataFrame(Latitude_in,Longitude_in):
     df = pd.DataFrame({'Latitude' : Latitude_in, 'Longitude' : Longitude_in}, index=[0] )
@@ -42,6 +43,10 @@ def getPythonExe():
     return(sys.executable)
 
 @xw.func
+def getPythonWD():
+    return(os.getcwd())
+
+@xw.func
 def coord2country(Latitude_in,Longitude_in):
     gdf = makeGeoDataFrame(Latitude_in,Longitude_in)
     gdf_country = geopandas.sjoin(gdf, WORLD_LOWRES, how = 'inner', op = 'within')
@@ -50,6 +55,7 @@ def coord2country(Latitude_in,Longitude_in):
 
 @xw.func
 def coord2NERC(Latitude_in,Longitude_in):
+    NERC_REGIONS = geopandas.read_file(os.path.abspath('./data/NERC_Regions/NERC_Regions.shp'))
     gdf = makeGeoDataFrame(Latitude_in,Longitude_in)
     gdf_country = geopandas.sjoin(gdf, NERC_REGIONS, how = 'inner', op = 'within')
     NERC_Acronym = re.search('\(([^)]+)', gdf_country.SUBNAME[0]).group(1) 
@@ -143,9 +149,9 @@ def save_img(lat,lon, file_path, file_name,download_images, xl_app):
     
     row_offset = 7 
     row_number = int(xl_app.caller.row)-row_offset
-    img_top = 90 + row_number *200
-    
-    sht.pictures.add(os.path.abspath(os.path.join(file_path,file_name) ), name = os.path.abspath(os.path.join(file_path,file_name) ), height = 200, left = 1045 , top = img_top, width = 200)
+    img_top = 190 + row_number *200
+    img_left = int(xl_app.caller.left)
+    sht.pictures.add(os.path.abspath(os.path.join(file_path,file_name) ), name = os.path.abspath(os.path.join(file_path,file_name) ), height = 200, left = img_left , top = img_top, width = 200)
     
     return(full_path ) #os.path.abspath(os.path.join(file_path,file_name) ))
 #    b = cStringIO.StringIO(a)
@@ -164,8 +170,64 @@ def delete_all_images():
     sht = xw.Book.caller().sheets.active
     for picture in sht.pictures:
         picture.delete()
-    return(SHOW_IMAGES)
+    return(True)
 
+@xw.func
+@xw.arg('xl_app', vba='Application')
+def getPovertyLinePct(lat,lon, buffer_dist ,download_images, xl_app):
+    geodata,filename = data.scripts.census.getDataAndImageForPoint(lat,lon,'pct_under_poverty_line', buffer_dist)
+
+    #display image
+    #remove previous image
+    sht = xw.Book.caller().sheets.active
+
+    try:
+        sht.pictures[os.path.abspath(filename )].delete()
+    except KeyError:
+        pass
+
+    if download_images:
+        row_offset = 7 
+        row_number = int(xl_app.caller.row)-row_offset
+        img_top = 190 + row_number *200
+        img_left = int(xl_app.caller.offset(0,2).left)
+        sht.pictures.add(os.path.abspath(filename ), name = os.path.abspath(filename ), height = 200, left = img_left , top = img_top, width = 200)
+    
+    return (sum(geodata.pct_under_poverty_line *geodata.B01001_001E) / sum(geodata.B01001_001E))
+
+@xw.func
+@xw.arg('xl_app', vba='Application')
+def getPopulation(lat,lon, buffer_dist ,download_images, xl_app):
+    geodata,filename = data.scripts.census.getDataAndImageForPoint(lat,lon,'B01001_001E', buffer_dist)
+
+    #display image
+    #remove previous image
+    sht = xw.Book.caller().sheets.active
+    try:
+        sht.pictures[os.path.abspath(filename )].delete()
+    except KeyError:
+        pass
+
+    if download_images:
+        row_offset = 7 
+        row_number = int(xl_app.caller.row)-row_offset
+        img_top = 190 + row_number *200
+        img_left = int(xl_app.caller.offset(0,2).left)
+        sht.pictures.add(os.path.abspath(filename ), name = os.path.abspath(filename ), height = 200, left = img_left , top = img_top, width = 200)
+    
+    return ( sum(geodata.B01001_001E)/(3.8621020e-7*sum(geodata.ALAND)))
+
+print('end UDF definitions')
+
+#@xw.func
+#def MacaulayDuration(rate, price, ytm, maturity):
+#    rates = np.full(maturity, rate)
+#    cf = rates * 100
+#    cf[maturity] += 100
+
+#    mac_dur = np.sum([cfs[i]*（i+1）/np.power(1+rates[i],i+1) for i in range(len(cfs))])/price
+#    mod_dur = mac_dur/(1+ytm/no_coupons)
+#    return mac_dur, mod_dur
 
 @xw.sub
 def sample_sub():
@@ -181,6 +243,7 @@ def sample_sub():
 
     xw.App.calculation= 'automatic'
     xw.App.screen_updating = True
+
 
 @xw.sub
 def classifyUrbanRural():
@@ -228,7 +291,9 @@ def classifyUrbanRural():
     xw.App.calculation= 'automatic'
     xw.App.screen_updating = True
 
-@xw.func
-def getPovertyLinePct(lat,lon):
-    geodata = data.scripts.census.getDataAndImageForPoint(lat,lon,'pct_under_poverty_line')
-    return (sum(geodata.pct_under_poverty_line *geodata.B01001_001E) / sum(geodata.B01001_001E))
+@xw.sub
+def clearImages():
+    sht = xw.Book.caller().sheets.active
+    for picture in sht.pictures:
+        picture.delete()
+    
