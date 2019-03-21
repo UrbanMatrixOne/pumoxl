@@ -2,8 +2,9 @@
 
 python package for use in excel via xlwings
 
-instructions (Windows or Mac)
+setup instructions (Windows or Mac)
 1. Download & Install Anaconda
+2. run `python setup.py` to download required data
 2. create environment xlenv 
 3. install xlwings `conda install xlwings`
 4. Install full add-in `xlwings addin install`
@@ -14,7 +15,7 @@ instructions (Windows or Mac)
 8. Press `Alt+F11` to open vba editor. choose `xlwings` and press ok 
 
 
+run the spreadsheet instructions:
+double click `run_excel.bat` or `run_excel_32.bat`
 Open the file : 
-`pumoxl.xlsm`
-Edit the python code:
 `pumoxl.xlsm`
