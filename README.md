@@ -17,5 +17,6 @@ setup instructions (Windows or Mac)
 
 run the spreadsheet instructions:
 double click `run_excel.bat` or `run_excel_32.bat`
+
 Open the file : 
-`pumoxl.xlsm`
+`prototype.xlsm`
