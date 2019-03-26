@@ -4,7 +4,6 @@ import pandas as pd, numpy as np
 import geopandas
 from shapely.geometry import Point
 import os, sys, re 
-import urllib.request
 
 
 from keras.applications.mobilenetv2 import preprocess_input
@@ -16,7 +15,9 @@ from keras import optimizers
 
 from absl import flags
 from scipy import misc
-import data.scripts.census
+
+import scripts.census
+import scripts.imagery
 
 WORLD_LOWRES = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
 
@@ -140,11 +141,13 @@ def save_img(lat,lon, file_path, file_name,download_images, xl_app):
 
     zoom_factor = 18
     pixel_dim = 400
-    key = 'AIzaSyAig-Wkbj1Rw-6ElabUWK_JlWvOpn57YJs'
-    url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + str(lat) + ',' + \
-    str(lon) + '&zoom='+str(zoom_factor)+'&size='+str(pixel_dim)+'x'+str(pixel_dim+50)+'&maptype=satellite&key=' + key
+    
+    scripts.imagery.downloadGoogleImage(lat,lon,  zoom_factor =  zoom_factor, full_path= full_path)
+    # key = 'AIzaSyAig-Wkbj1Rw-6ElabUWK_JlWvOpn57YJs'
+    # url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + str(lat) + ',' + \
+    # str(lon) + '&zoom='+str(zoom_factor)+'&size='+str(pixel_dim)+'x'+str(pixel_dim+50)+'&maptype=satellite&key=' + key
 
-    urllib.request.urlretrieve(url, full_path )
+    # urllib.request.urlretrieve(url, full_path )
     
     
     row_offset = 7 
@@ -175,7 +178,7 @@ def delete_all_images():
 @xw.func
 @xw.arg('xl_app', vba='Application')
 def getPovertyLinePct(lat,lon, buffer_dist ,download_images, xl_app):
-    geodata,filename = data.scripts.census.getDataAndImageForPoint(lat,lon,'pct_under_poverty_line', buffer_dist)
+    geodata,filename = scripts.census.getDataAndImageForPoint(lat,lon,'pct_under_poverty_line', buffer_dist)
 
     #display image
     #remove previous image
@@ -198,7 +201,7 @@ def getPovertyLinePct(lat,lon, buffer_dist ,download_images, xl_app):
 @xw.func
 @xw.arg('xl_app', vba='Application')
 def getPopulation(lat,lon, buffer_dist ,download_images, xl_app):
-    geodata,filename = data.scripts.census.getDataAndImageForPoint(lat,lon,'B01001_001E', buffer_dist)
+    geodata,filename = scripts.census.getDataAndImageForPoint(lat,lon,'B01001_001E', buffer_dist)
 
     #display image
     #remove previous image
