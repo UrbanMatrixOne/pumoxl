@@ -16,11 +16,11 @@ def getWaterDataForPoint(Latitude_in,Longitude_in,buffer_dist = .05):
 
     #merge water data with buffer
     water_geodata_buffer = gpd.sjoin(water_data,user_buffer)
-    print(water_geodata_buffer.shape)
+    return water_geodata_buffer
     #make plot
     
 #    satellite_img = imagery.downloadGoogleImage(Latitude_in,Longitude_in)
-    imagery_dict = create_earth_image_raster.generate_for_coord(Latitude_in,Longitude_in,18)
+"""   imagery_dict = create_earth_image_raster.generate_for_coord(Latitude_in,Longitude_in,18)
     with source as rasterio.open(imagery_dict['tif'],'r'):
         red = source.read(1)
         green = source.read(2)
@@ -34,21 +34,13 @@ def getWaterDataForPoint(Latitude_in,Longitude_in,buffer_dist = .05):
         water_geodata_buffer.plot(ax = ax)
         
         filename_out = f'data/lon_{Longitude_in}_lat{Latitude_in}_water_{buffer_dist}.png'
-        plt.savefig(filename_out)
+        plt.savefig(filename_out )"""
 
 
     
 
-    
-    
-#    user_point.plot(ax = base, marker = '+',color = 'red',markersize = 100)
-    filename_out = f'data/lon_{Longitude_in}_lat{Latitude_in}_water_{buffer_dist}.png'
-    plt.savefig(filename_out)
-    
 
-getWaterDataForPoint(  Latitude_in,Longitude_in )
-
-
+""" 
 #
 #
 #
@@ -87,4 +79,4 @@ ax = plt.imshow(pix, extent=bounds)
 water_geodata_buffer.plot(ax = ax)
 
 filename_out = f'data/lon_{Longitude_in}_lat{Latitude_in}_water_{buffer_dist}.png'
-plt.savefig(filename_out)
+plt.savefig(filename_out) """
