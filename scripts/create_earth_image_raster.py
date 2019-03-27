@@ -1,10 +1,6 @@
-
-
-
-
 import click 
 import rasterio
-import os
+import os,pathlib
 import glob
 from PIL import Image
 import numpy as np
@@ -99,6 +95,15 @@ def combineRasters(raster_paths, filename_out ):
     newfile.write(merged_dataset)
     newfile.close()
 
+def generate_for_coord(latitude,longitude, zoom_level, img_dir ='./data/images'):
+    width = 224
+    
+    png_path =  os.path.join(img_dir,'png/')
+    tif_path =  os.path.join(img_dir,'tif/')
+
+    png_out = downloadGoogleImage(latitude,longitude,pixel_dim=width, img_dir= png_path ,buffer=25)
+    tif_out = savePNGasTIF(latitude,longitude,img_dir= png_path, tif_dir= tif_path,buffer=25)
+    return {'png':png_out,'tif':tif_out}
 
 def generate_for_bbox(bbox, zoom_level = 18):
 #def createImagesAndRastersForBoundingBox(west,south,east,north, zoom_level = 18):
@@ -122,20 +127,20 @@ def generate_for_bbox(bbox, zoom_level = 18):
 
     print(f'generated {len(rasters)} images')
 
-@click.group()
-def raster_command():
-    pass
+#@click.group()
+#def raster_command():
+#    pass
 
-@raster_command.command()
-@click.option('--file', type=click.Path())
+#@raster_command.command()
+#@click.option('--file', type=click.Path())
 def csv(file):
     coords = pd.read_csv(file)
     for index, row in coords.iterrows():
         downloadGoogleImage(row.lat, row.lon, row.zoom_level, row.pixel_dim, row.img_dir  )
         savePNGasTIF(row.lat,row.lon,  row.zoom_level,    img_dir= row.img_dir ,  tif_dir=row.tif_dir)
 #iterate over bounding box
-@raster_command.command()
-@click.option('--bbox', nargs=4, type=float)
+#@raster_command.command()
+#@click.option('--bbox', nargs=4, type=float)
 def box(bbox, zoom_level = 18):
 #def createImagesAndRastersForBoundingBox(west,south,east,north, zoom_level = 18):
     #bbox = [west,south,east,north]
@@ -157,6 +162,7 @@ def box(bbox, zoom_level = 18):
             rasters.append(savePNGasTIF(latitude,longitude,buffer=25))
 
     print(f'generated {len(rasters)} images')
+
 
 
 if __name__ =='__main__':
