@@ -143,7 +143,7 @@ def save_img(lat,lon, file_path, file_name,download_images, xl_app):
     pixel_dim = 400
     
     scripts.imagery.downloadGoogleImage(lat,lon,  zoom_factor =  zoom_factor, full_path= full_path)
-    # key = 'AIzaSyAig-Wkbj1Rw-6ElabUWK_JlWvOpn57YJs'
+    # key = '' # your google key here
     # url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + str(lat) + ',' + \
     # str(lon) + '&zoom='+str(zoom_factor)+'&size='+str(pixel_dim)+'x'+str(pixel_dim+50)+'&maptype=satellite&key=' + key
 
